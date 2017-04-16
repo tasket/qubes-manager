@@ -102,6 +102,10 @@ class NewVmDlg (QDialog, Ui_NewVMDlg):
                 self.template_name.insertItem(i, vm.name + self.tr(" (default)"))
             else:
                 self.template_name.insertItem(i, vm.name)
+## Add 'none' option for HVM templates
+        if self.hvm_radio.isChecked() and self.standalone.isChecked():
+            self.template_name.addItem(self.tr("(none)"))
+            default_index = i + 1
         self.template_name.setCurrentIndex(default_index)
 
     def fill_netvm_list(self):
@@ -170,11 +174,11 @@ class NewVmDlg (QDialog, Ui_NewVMDlg):
         return self.on_hvm_radio_toggled(checked)
 
     def on_standalone_toggled(self, checked):
-        if checked and (self.hvm_radio.isChecked() or
-                        self.hvmtpl_radio.isChecked()):
+        if checked and (self.hvmtpl_radio.isChecked()):
             self.template_name.setEnabled(False)
         else:
             self.template_name.setEnabled(True)
+        self.fill_template_list()
 
         if not checked and self.hvm_radio.isChecked():
             self.hvmtemplatewarningbox.show()
@@ -297,5 +301,4 @@ class NewVmDlg (QDialog, Ui_NewVMDlg):
             qc.unlock_db()
 
         thread_monitor.set_finished()
-
 
